@@ -62,6 +62,17 @@ runner defaults (`RUNNER_KUBECONFIG`, `RUNNER_RANCHER_CONTEXT`,
 runner is still necessary; source files cannot grant deployment permissions.
 The workflow reuses these settings automatically, not per-user setup.
 
+Without a shared runner, double-click `Start-Release-Runner.cmd` after the
+first push. With Docker Desktop running (it prompts if not), it builds a runner
+image, registers it to this repository's `origin` with label `soims-release`
+using your Git login (repository admin), and keeps it running with Docker.
+On first use it asks once for your Rancher kubeconfig; it is kept in
+`%USERPROFILE%\.vg2c-runner`, never in the repository. Defaults: context
+`cn01-linux`, domain `GAR`, owner = your Windows username. Override with
+`runner\start-runner.ps1 -Owner <id> -Context <ctx> -Domain <domain> -Recreate`.
+Afterwards, every `git push` releases while the PC and Docker stay on.
+The runner controls the host Docker engine: use it only for trusted repositories.
+
 The standalone default does not create a schedule or persistent output mount.
 Add these through the platform when required. Existing test-mode exclusions
 are unchanged; this job keeps read-only AED enabled and email/MMS disabled.

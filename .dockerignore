@@ -1,6 +1,8 @@
 .git
 .github
 automation
+runner
+Start-Release-Runner.cmd
 release.yaml
 .venv
 **/__pycache__
