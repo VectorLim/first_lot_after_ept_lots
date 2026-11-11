@@ -1,0 +1,6 @@
+datasyncx
+duckdb==1.5.6
+pandas==3.0.3
+python-dotenv>=1.2,<2
+cryptography
+./dependencies/aed_client_apikey-6.2.0-py3-none-any.whl

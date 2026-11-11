@@ -1,0 +1,39 @@
+project:
+  name: first_lot_after_ept_lots
+  description: Generated VG2C job, read-only test deployment
+namespace: icmpcs-soims
+funcname: vg2c-first-lot-after-ept-lot-ba772021
+dnshostname: vg2c-first-lot-after-ept-lot-ba772021.s33prod.mfg.intel.com
+targetname: active
+action: create
+containers:
+- image: amr-registry.caas.intel.com/soia/vg2c-first-lot-after-ept-lot-ba772021:pending
+  resources:
+    requests:
+      cpu: 2
+      gpu:
+        type: nvidia.com/gpu
+        quantity: 0
+      mem: 1000
+  usesInferenceClient: true
+  environmentvariable:
+    ENV_MODE: test
+    SITE: KM
+version: '1.0'
+maxinstances: 1
+mininstances: 1
+targetclients: []
+deadline: ''
+loglabel: python-ecs
+secrets:
+  pull: itcaas-regcred
+  env:
+    workflow-testing-database:
+    - NAME
+    - PW
+    aed-api-key:
+    - API_KEY
+    - API_CONFIG
+branches:
+  main: ''
+  master: -master
