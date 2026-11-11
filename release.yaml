@@ -37,3 +37,4 @@ secrets:
 branches:
   main: ''
   master: -master
+  prod: -prod
