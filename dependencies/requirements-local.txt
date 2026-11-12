@@ -1,0 +1,3 @@
+# Local Run-Local.cmd installs only; the Docker base image already provides DataSyncX.
+datasyncx @ git+https://mfg-github.mfg.intel.com/intel-manufacturing/applications.manufacturing.analytics.atm.datasyncx@1.1.6
+-r requirements.txt

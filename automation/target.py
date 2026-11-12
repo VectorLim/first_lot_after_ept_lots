@@ -1,4 +1,4 @@
-"""The release target read from release.yaml: AppSpec, Secret names and branch map."""
+"""The release target: release.yaml AppSpec plus automation/settings.yaml Secrets and branches."""
 
 import copy
 from pathlib import Path
@@ -13,17 +13,26 @@ SECRET = r"[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?"
 SUFFIX = r"(-[a-z0-9]+)*"
 
 
+def settings_path(config=CONFIG):
+    return Path(config).parent / "automation" / "settings.yaml"
+
+
 def load(config=CONFIG):
-    """Split release.yaml into the AppSpec and the keys that are never sent to IMServerless."""
+    """Read the uploadable AppSpec and the workflow-only Secret and branch settings."""
     spec = yaml.safe_load(Path(config).read_text(encoding="utf-8"))
-    return spec, spec.pop("secrets"), spec.pop("branches")
+    if {"secrets", "branches"} & set(spec):
+        raise ValueError(
+            "Move secrets and branches from release.yaml to automation/settings.yaml"
+        )
+    settings = yaml.safe_load(settings_path(config).read_text(encoding="utf-8"))
+    return spec, settings["secrets"], settings["branches"]
 
 
 def release_branches(config=CONFIG):
     branches = load(config)[2]
     if not isinstance(branches, dict) or not branches:
         raise ValueError(
-            "release.yaml branches must map at least one branch to a suffix"
+            "settings.yaml branches must map at least one branch to a suffix"
         )
     for branch, suffix in branches.items():
         if (
@@ -47,7 +56,7 @@ class Target:
         self.suffix = "" if branch is None else release_branches(config).get(branch)
         if self.suffix is None:
             raise ValueError(
-                f"Branch {branch!r} is not listed under release.yaml branches"
+                f"Branch {branch!r} is not listed under automation/settings.yaml branches"
             )
         if len(spec["containers"]) != 1:
             raise ValueError("Exactly one AppSpec container is supported")
@@ -90,7 +99,7 @@ class Target:
                 or not keys
                 or not all(isinstance(key, str) for key in keys)
             ):
-                raise ValueError(f"Invalid Secret entry {name!r} in release.yaml")
+                raise ValueError(f"Invalid Secret entry {name!r} in automation/settings.yaml")
 
     def deployment_name(self, version):
         return f"{self.function}-{version.replace('.', '-')}-deployment"

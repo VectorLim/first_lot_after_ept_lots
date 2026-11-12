@@ -1,0 +1,15 @@
+# Release settings read only by the workflow; never sent to IMServerless.
+# release.yaml stays a plain AppSpec that can also be uploaded in the IMServerless UI.
+
+# Kubernetes Secrets attached to each workflow-deployed version: Secret name -> keys.
+secrets:
+  pull: itcaas-regcred
+  env:
+    workflow-testing-database: [NAME, PW]
+    aed-api-key: [API_KEY, API_CONFIG]
+
+# Branches that release, each with a unique suffix for its app and image names.
+branches:
+  main: ''
+  master: '-master'
+  prod: '-prod'

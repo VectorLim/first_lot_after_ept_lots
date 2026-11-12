@@ -51,8 +51,9 @@ copying or renaming the folder. It is separate from the previously published
 private SOIMS first-lot app below. `main` deploys the base test target; `master`
 deploys a separate `-master` test target, and `prod` deploys a separate `-prod`
 test target. The `prod` branch name still uses `ENV_MODE=test`; it does not switch
-to production. Other branches must be added to the config with unique suffixes
-before release.
+to production. Other branches must be added to the `branches` map in
+`automation/settings.yaml` with unique suffixes before release. That file also
+names the Kubernetes Secrets the workflow attaches; neither is sent to IMServerless.
 
 The destination repository must be allowed to use the shared Linux
 `soims-release` runner. Platform maintainers provide protected Rancher access,
@@ -71,11 +72,39 @@ On first use it asks once for your Rancher kubeconfig; it is kept in
 `cn01-linux`, domain `GAR`, owner = your Windows username. Override with
 `runner\start-runner.ps1 -Owner <id> -Context <ctx> -Domain <domain> -Recreate`.
 Afterwards, every `git push` releases while the PC and Docker stay on.
+Double-click `Stop-Release-Runner.cmd` to stop it; pushes then queue on GitHub
+until you start it again. Stopping cancels a release in progress.
 The runner controls the host Docker engine: use it only for trusted repositories.
 
 The standalone default does not create a schedule or persistent output mount.
 Add these through the platform when required. Existing test-mode exclusions
 are unchanged; this job keeps read-only AED enabled and email/MMS disabled.
+
+## IMServerless UI Upload
+
+`release.yaml` can be uploaded as-is in the IMServerless UI. Its `:latest` tag
+points at the newest successfully released image of the base app; for another
+branch's app, add that branch's suffix to `funcname`, `dnshostname` and the
+image repository. The workflow sets `version` and `action` itself; for a UI
+upload, set `version` above the current one (for example `1.4` to `1.5`) and
+`action: update` once the app exists. UI uploads do not attach the Kubernetes
+Secrets (`NAME`/`PW`, AED keys) or the pull Secret; the workflow patches those
+only into versions it deploys itself. An uploaded version therefore runs
+without them; release through the workflow when the job needs database or AED
+access.
+
+## Run Locally (One Click)
+
+Double-click `Run-Local.cmd` to run `main.py` on this PC. The first run creates
+a project `.venv` (Python 3.13, 3.12, 3.11 or 3.14 via the `py` launcher, else
+`python`) and installs `dependencies/requirements-local.txt`, which adds the
+DataSyncX git source (the Docker base already provides it; first install needs
+Git and mfg-github access) to `requirements.txt`. Later runs start
+immediately and reinstall only after either file changes. Delete `.venv` to
+rebuild it. In VS Code, select `.venv` as the interpreter to run or debug
+`main.py` directly. Put local `NAME`/`PW` (and any other runtime values) in a
+project `.env`; it is git- and Docker-ignored. `.venv`, `Run-Local.cmd` and
+`requirements-local.txt` are excluded from the Docker image.
 
 ## Local Build and Runtime
 

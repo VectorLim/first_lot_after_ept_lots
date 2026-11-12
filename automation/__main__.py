@@ -22,7 +22,7 @@ def main():
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--config", type=Path, default=CONFIG)
     common.add_argument(
-        "--branch", required=True, help="Git branch listed under release.yaml branches"
+        "--branch", required=True, help="Git branch listed under automation/settings.yaml branches"
     )
     cluster = argparse.ArgumentParser(add_help=False, parents=[common])
     cluster.add_argument("--kubeconfig", required=True, type=Path)

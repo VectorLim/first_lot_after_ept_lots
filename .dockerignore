@@ -3,6 +3,9 @@
 automation
 runner
 Start-Release-Runner.cmd
+Stop-Release-Runner.cmd
+Run-Local.cmd
+dependencies/requirements-local.txt
 release.yaml
 .venv
 **/__pycache__

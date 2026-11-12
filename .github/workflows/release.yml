@@ -186,6 +186,14 @@ jobs:
             --image "$RELEASE_DIGEST" --kubeconfig "$KUBECONFIG" \
             --context "$RANCHER_CONTEXT" --owner "$IMSERVERLESS_OWNER" --domain "$IMSERVERLESS_DOMAIN"
 
+      - name: Point the latest tag at this image for IMServerless UI uploads
+        if: ${{ env.RELEASE == 'true' }}
+        run: |
+          set -euo pipefail
+          docker tag "$RELEASE_IMAGE" "$IMAGE_REPOSITORY:latest"
+          docker push "$IMAGE_REPOSITORY:latest"
+          printf '\n`%s:latest` now points at `%s`.\n' "$IMAGE_REPOSITORY" "$RELEASE_DIGEST" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Remove temporary credentials and checkout
         if: ${{ always() }}
         run: |

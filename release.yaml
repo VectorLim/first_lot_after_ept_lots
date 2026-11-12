@@ -7,7 +7,7 @@ dnshostname: vg2c-first-lot-after-ept-lot-ba772021.s33prod.mfg.intel.com
 targetname: active
 action: create
 containers:
-- image: amr-registry.caas.intel.com/soia/vg2c-first-lot-after-ept-lot-ba772021:pending
+- image: amr-registry.caas.intel.com/soia/vg2c-first-lot-after-ept-lot-ba772021:latest
   resources:
     requests:
       cpu: 2
@@ -25,16 +25,3 @@ mininstances: 1
 targetclients: []
 deadline: ''
 loglabel: python-ecs
-secrets:
-  pull: itcaas-regcred
-  env:
-    workflow-testing-database:
-    - NAME
-    - PW
-    aed-api-key:
-    - API_KEY
-    - API_CONFIG
-branches:
-  main: ''
-  master: -master
-  prod: -prod

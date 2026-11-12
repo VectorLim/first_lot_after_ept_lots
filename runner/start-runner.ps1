@@ -15,7 +15,8 @@ param(
     [string]$Owner = $env:USERNAME,
     [string]$Domain = 'GAR',
     [string]$BaseImage = 'amr-registry.caas.intel.com/soia/icmpcs-soims:base',
-    [switch]$Recreate
+    [switch]$Recreate,
+    [switch]$Stop
 )
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -77,6 +78,10 @@ try {
         Show-Message 'Docker Desktop is not installed. Install it, start it, then run this again.' 'OK' 'Error' | Out-Null
         exit 1
     }
+    if ($Stop -and -not (Test-DockerLinux)) {
+        Write-Host 'Docker Desktop is not running, so the runner is already stopped.' -ForegroundColor Green
+        exit 0
+    }
     while (-not (Test-DockerLinux)) {
         $answer = Show-Message ("Docker Desktop is not running (or uses Windows containers).`n`n" +
             "Start Docker Desktop, wait for 'Engine running' with Linux containers, then click Retry.") 'RetryCancel' 'Warning'
@@ -93,6 +98,12 @@ try {
     if ($name.Length -gt 63) { $name = $name.Substring(0, 63).TrimEnd('-') }
 
     $existing = docker ps -a --filter "name=^$name$" --format '{{.State}}'
+    if ($Stop) {
+        # Registration is kept; Start-Release-Runner.cmd resumes it. A release in progress is cancelled.
+        if ($existing -eq 'running') { Invoke-Docker stop $name | Out-Null }
+        Write-Host "Runner $name is stopped. Pushes will queue until you start it again." -ForegroundColor Green
+        exit 0
+    }
     if ($existing -and $Recreate) {
         Invoke-Docker rm -f $name | Out-Null
         $existing = $null
