@@ -48,12 +48,17 @@ def release_branches(config=CONFIG):
     return branches
 
 
+def branch_suffix(branch, config=CONFIG):
+    """Suffix for a branch; the '*' entry, if present, covers every unlisted branch."""
+    branches = release_branches(config)
+    return branches.get(branch, branches.get("*"))
+
 class Target:
     """The reviewed release target of this repository; nothing else is mutated."""
 
     def __init__(self, config=CONFIG, branch=None):
         spec, secrets, _ = load(config)
-        self.suffix = "" if branch is None else release_branches(config).get(branch)
+        self.suffix = "" if branch is None else branch_suffix(branch, config)
         if self.suffix is None:
             raise ValueError(
                 f"Branch {branch!r} is not listed under automation/settings.yaml branches"

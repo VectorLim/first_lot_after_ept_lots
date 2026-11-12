@@ -5,11 +5,11 @@ from pathlib import Path
 
 from .cluster import Cluster, preflight, registry_config
 from .release import deploy
-from .target import CONFIG, Target, release_branches
+from .target import CONFIG, Target, branch_suffix
 
 
 def plan(args):
-    if args.branch not in release_branches(args.config):
+    if branch_suffix(args.branch, args.config) is None:
         print("RELEASE=false")
         return
     target = Target(args.config, args.branch)

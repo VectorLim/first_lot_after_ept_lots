@@ -35,7 +35,8 @@ For Linux deployment, mount the shared config root read-only and set runtime
 This folder now includes `release.yaml`, `automation/`, `.gitignore`, and
 `.github/workflows/release.yml`. Make this folder the Git repository root;
 GitHub ignores workflows nested beneath a job subfolder. Push committed source
-on `main`, `master`, or `prod`, or select **Actions > Build, push and deploy VG2C job > Run workflow**.
+to `prod` to release the app in `release.yaml`; any other branch deploys a
+shared `-test` app. Or select **Actions > Build, push and deploy VG2C job > Run workflow**.
 Manual deployment defaults on; uncheck deployment for image-only publication.
 The translating machine and compiler installation are not required.
 
@@ -48,11 +49,11 @@ Credential values stay in Kubernetes, not in this folder or image.
 
 The standalone target is recorded in `release.yaml` and remains stable after
 copying or renaming the folder. It is separate from the previously published
-private SOIMS first-lot app below. `main` deploys the base test target; `master`
-deploys a separate `-master` test target, and `prod` deploys a separate `-prod`
-test target. The `prod` branch name still uses `ENV_MODE=test`; it does not switch
-to production. Other branches must be added to the `branches` map in
-`automation/settings.yaml` with unique suffixes before release. That file also
+private SOIMS first-lot app below. `prod` deploys the base app named in
+`release.yaml` (the one an IMServerless UI upload targets); every other branch
+shares the `-test` app via the `'*'` entry in the `branches` map of
+`automation/settings.yaml`. The `prod` branch name still uses `ENV_MODE=test`;
+it does not switch to production. That file also
 names the Kubernetes Secrets the workflow attaches; neither is sent to IMServerless.
 
 The destination repository must be allowed to use the shared Linux

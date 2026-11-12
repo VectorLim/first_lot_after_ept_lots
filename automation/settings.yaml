@@ -9,7 +9,8 @@ secrets:
     aed-api-key: [API_KEY, API_CONFIG]
 
 # Branches that release, each with a unique suffix for its app and image names.
+# The '' branch deploys the app named in release.yaml (the one the UI upload targets).
+# '*' covers every other branch: they all share one test app.
 branches:
-  main: ''
-  master: '-master'
-  prod: '-prod'
+  prod: ''
+  '*': '-test'
